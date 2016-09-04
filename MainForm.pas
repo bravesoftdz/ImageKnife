@@ -1,9 +1,12 @@
 unit MainForm;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics,
+  Controls, Forms, Dialogs,
   ExtCtrls, ComCtrls, Buttons, Contnrs, ExtDlgs, StdCtrls,
   Menus,
   ImageKnifeDocument, RectGrid, Grids;
@@ -67,15 +70,14 @@ type
     btnRefreshWidth: TBitBtn;
     StringGrid1: TStringGrid;
     procedure FormCreate(Sender: TObject);
-    procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
-    procedure TreeView1Edited(Sender: TObject; Node: TTreeNode;
-      var S: String);
+    procedure TreeView1Edited(Sender: TObject; Node: TTreeNode; var S: string);
     procedure TreeView1Change(Sender: TObject; Node: TTreeNode);
     procedure btnAutoNameClick(Sender: TObject);
     procedure mnuFileNewClick(Sender: TObject);
@@ -93,12 +95,12 @@ type
     procedure btnSelectParentsClick(Sender: TObject);
     procedure btnGroupClick(Sender: TObject);
     procedure PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure chkBackgroundClick(Sender: TObject);
     procedure cmbVAlignChange(Sender: TObject);
     procedure btnRefreshWidthClick(Sender: TObject);
-    procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
-      const Value: String);
+    procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: integer;
+      const Value: string);
   private
     document: TImageKnifeDocument;
 
@@ -106,8 +108,8 @@ type
     OldMarker: TPoint;
     MarkerMode: (mmSelect, mmSelectParents, mmHorizontal, mmVertical, mmCross);
 
-    zoomLevel: Double;
-    
+    zoomLevel: double;
+
     procedure DrawCross(const ptPhysical: TPoint);
     procedure DrawHorizontal(const ptPhysical: TPoint);
     procedure DrawVertical(const ptPhysical: TPoint);
@@ -133,7 +135,8 @@ type
     function GetGridProperty(const Index: string): string;
     procedure SetGridProperty(const Index: string; const Value: string);
   public
-    property GridProperty[const Index: String]: String read GetGridProperty write SetGridProperty;
+    property GridProperty[const Index: string]: string
+      read GetGridProperty write SetGridProperty;
   end;
 
 var
@@ -141,32 +144,35 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure TForm1.DrawCross(const ptPhysical: TPoint);
 begin
-  with PaintBox1.Canvas do begin
+  with PaintBox1.Canvas do
+  begin
 
-    MoveTo(0,               ptPhysical.Y);
-    LineTo(ptPhysical.X,    ptPhysical.Y);
-    LineTo(ptPhysical.X,    0);
+    MoveTo(0, ptPhysical.Y);
+    LineTo(ptPhysical.X, ptPhysical.Y);
+    LineTo(ptPhysical.X, 0);
     MoveTo(PaintBox1.Width, ptPhysical.Y);
-    LineTo(ptPhysical.X,    ptPhysical.Y);
-    LineTo(ptPhysical.X,    PaintBox1.Height);
+    LineTo(ptPhysical.X, ptPhysical.Y);
+    LineTo(ptPhysical.X, PaintBox1.Height);
   end;
 end;
 
 procedure TForm1.DrawHorizontal(const ptPhysical: TPoint);
 begin
-  with PaintBox1.Canvas do begin
-    MoveTo(0,               ptPhysical.Y);
+  with PaintBox1.Canvas do
+  begin
+    MoveTo(0, ptPhysical.Y);
     LineTo(PaintBox1.Width, ptPhysical.Y);
   end;
 end;
 
 procedure TForm1.DrawVertical(const ptPhysical: TPoint);
 begin
-  with PaintBox1.Canvas do begin
+  with PaintBox1.Canvas do
+  begin
     MoveTo(ptPhysical.X, 0);
     LineTo(ptPhysical.X, PaintBox1.Height);
   end;
@@ -186,26 +192,28 @@ end;
 
 function TForm1.PhysicalRect(const rtLogical: TRect): TRect;
 begin
-  Result.Left    := Round(rtLogical.Left    * zoomLevel);
-  Result.Top     := Round(rtLogical.Top     * zoomLevel);
-  Result.Right   := Round(rtLogical.Right   * zoomLevel);
-  Result.Bottom  := Round(rtLogical.Bottom  * zoomLevel);
+  Result.Left := Round(rtLogical.Left * zoomLevel);
+  Result.Top := Round(rtLogical.Top * zoomLevel);
+  Result.Right := Round(rtLogical.Right * zoomLevel);
+  Result.Bottom := Round(rtLogical.Bottom * zoomLevel);
 end;
 
 function TForm1.LogicalRect(const rtPhysical: TRect): TRect;
 begin
-  Result.Left    := Round(rtPhysical.Left    / zoomLevel);
-  Result.Top     := Round(rtPhysical.Top     / zoomLevel);
-  Result.Right   := Round(rtPhysical.Right   / zoomLevel);
-  Result.Bottom  := Round(rtPhysical.Bottom  / zoomLevel);
+  Result.Left := Round(rtPhysical.Left / zoomLevel);
+  Result.Top := Round(rtPhysical.Top / zoomLevel);
+  Result.Right := Round(rtPhysical.Right / zoomLevel);
+  Result.Bottom := Round(rtPhysical.Bottom / zoomLevel);
 end;
 
 procedure TForm1.DrawMarker(const ptLogical: TPoint);
 var
   ptPhysical: TPoint;
 begin
-  if document.Empty then Exit;
-  if (0 = ptLogical.X) and (0 = ptLogical.Y) then exit;
+  if document.Empty then
+    Exit;
+  if (0 = ptLogical.X) and (0 = ptLogical.Y) then
+    exit;
   ptPhysical := PhysicalPoint(ptLogical);
   PaintBox1.Canvas.Pen.Mode := pmNot;
   case MarkerMode of
@@ -218,10 +226,10 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  rgSelection := TObjectList.Create(false);
-  
+  rgSelection := TObjectList.Create(False);
+
   document := TImageKnifeDocument.Create;
-  
+
   zoomLevel := 1;
 
   OldMarker.X := 0;
@@ -241,7 +249,8 @@ begin
   bmp := TBitmap.Create;
   bmp.Width := rt.Right - rt.Left;
   bmp.Height := rt.Bottom - rt.Top;
-  bmp.Canvas.CopyRect(Rect(0,0,bmp.Width,bmp.Height), document.NormalImage.Bitmap.Canvas, rt);
+  bmp.Canvas.CopyRect(Rect(0, 0, bmp.Width, bmp.Height),
+    document.NormalImage.Bitmap.Canvas, rt);
 
   //png := TPNGObject.Create;
   //png.Assign(bmp);
@@ -255,13 +264,12 @@ begin
   //png.Free;
 end;
 
-procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
   pt: TPoint;
 begin
   DrawMarker(OldMarker);
-  pt := LogicalPoint(Point(X,Y));
+  pt := LogicalPoint(Point(X, Y));
 
   DrawMarker(pt);
   OldMarker := pt;
@@ -304,40 +312,43 @@ const
 var
   k: TObjectList;
   rg: TRectGrid;
-  x, y: Integer;
-  i: Integer;
+  x, y: integer;
+  i: integer;
   physRect: TRect;
 begin
-  if document.Empty then Exit;
-  k := TObjectList.Create(false);
+  if document.Empty then
+    Exit;
+  k := TObjectList.Create(False);
   k.Add(document.Grid);
 
   PaintBox1.Canvas.StretchDraw(PaintBox1.ClientRect, document.NormalImage.Bitmap);
   //PaintBox1.Canvas.CopyRect(PaintBox1.ClientRect, document.NormalImage.Bitmap.Canvas, PaintBox1.ClientRect);
   PaintBox1.Canvas.Brush.Color := clBlue;
   PaintBox1.Canvas.Brush.Style := bsSolid;
-  while k.Count > 0 do begin
+  while k.Count > 0 do
+  begin
     rg := k[0] as TRectGrid;
     physRect := PhysicalRect(rg.Rect);
     k.Delete(0);
     if rg.Sliced then
-      begin
-        for i := 0 to rg.Kids.Count-1 do
-          k.Add(rg.Kids[i]);
-      end
+    begin
+      for i := 0 to rg.Kids.Count - 1 do
+        k.Add(rg.Kids[i]);
+    end
     else
-      begin
-        PaintBox1.Canvas.FrameRect(physRect);
-      end;
+    begin
+      PaintBox1.Canvas.FrameRect(physRect);
+    end;
   end;
 
-  for i := 0 to rgSelection.Count - 1 do begin
+  for i := 0 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
     physRect := PhysicalRect(rg.Rect);
-    for y := physRect.Top to physRect.Bottom-1 do
-      for x := physRect.Left to physRect.Right-1 do
-        if ((x mod 3)=0) and ((y mod 3)=0) then
-          PaintBox1.Canvas.Pixels[x, y] := stColor[rg.SliceType]
+    for y := physRect.Top to physRect.Bottom - 1 do
+      for x := physRect.Left to physRect.Right - 1 do
+        if ((x mod 3) = 0) and ((y mod 3) = 0) then
+          PaintBox1.Canvas.Pixels[x, y] := stColor[rg.SliceType];
   end;
 
   k.Free;
@@ -346,9 +357,10 @@ end;
 procedure TForm1.BuildTree;
 begin
   TreeView1.Items.Clear;
-  if not document.Empty then begin
+  if not document.Empty then
+  begin
     BuildTreeOneLevel(nil, document.Grid);
-    TreeView1.Items[0].Expand(true);
+    TreeView1.Items[0].Expand(True);
   end;
   BuildHTML;
 end;
@@ -356,7 +368,7 @@ end;
 procedure TForm1.BuildTreeOneLevel(const node: TTreeNode; const rg: TRectGrid);
 var
   nn: TTreeNode;
-  i: Integer;
+  i: integer;
 begin
   nn := TreeView1.Items.AddChild(node, rg.Name);
   nn.Data := rg;
@@ -365,8 +377,7 @@ begin
       BuildTreeOneLevel(nn, rg.Kids[i]);
 end;
 
-procedure TForm1.TreeView1Edited(Sender: TObject; Node: TTreeNode;
-  var S: String);
+procedure TForm1.TreeView1Edited(Sender: TObject; Node: TTreeNode; var S: string);
 var
   rg: TRectGrid;
 begin
@@ -393,36 +404,43 @@ begin
 end;
 
 procedure TForm1.btnAutoNameClick(Sender: TObject);
+
   procedure RenameKids(rg: TRectGrid);
   var
-    i: Integer;
+    i: integer;
     s: string;
   begin
-    if not rg.Sliced then Exit;
+    if not rg.Sliced then
+      Exit;
     if rg.SliceType = stHorizontal then
       s := 'r'
     else
       s := 'c';
 
-    for i := 0 to rg.Kids.Count - 1 do begin
-      rg.Kids[i].Name := rg.Name + '-' + s + IntToStr(i+1);
+    for i := 0 to rg.Kids.Count - 1 do
+    begin
+      rg.Kids[i].Name := rg.Name + '-' + s + IntToStr(i + 1);
       RenameKids(rg.Kids[i]);
     end;
 
   end;
+
 begin
-  if document.Empty then Exit;
+  if document.Empty then
+    Exit;
   document.Grid.Name := 'cell';
   RenameKids(document.Grid);
   BuildTree;
 end;
 
-function HTMLColor(col: DWORD): String;
+function HTMLColor(col: DWORD): string;
 begin
-  Result := '#' + IntToHex(GetRValue(col), 2) + IntToHex(GetGValue(col), 2) + IntToHex(GetBValue(col), 2)
+  Result := '#' + IntToHex(GetRValue(col), 2) + IntToHex(GetGValue(col), 2) +
+    IntToHex(GetBValue(col), 2);
 end;
 
 procedure TForm1.BuildHTML;
+
   procedure AddText(const template, Value: string);
   begin
     if Value <> '' then
@@ -436,7 +454,8 @@ procedure TForm1.BuildHTML;
     if rg.IsSingleColor then
       AddText(' bgcolor="?"', HTMLColor(rg.SingleColor));
 
-    if rg.IsBackground then begin
+    if rg.IsBackground then
+    begin
       Memo1.Text := Memo1.Text + ' style="';
       AddText('background-repeat: ?;', rg.Attributes['background-repeat']);
       AddText('background-position: ?;', rg.Attributes['background-position']);
@@ -464,9 +483,10 @@ procedure TForm1.BuildHTML;
 
   procedure WriteHTMLTable(const rg: TRectGrid);
   var
-    i, j: Integer;
+    i, j: integer;
   begin
-    for i := 0 to rg.Kids.Count - 1 do begin
+    for i := 0 to rg.Kids.Count - 1 do
+    begin
       Memo1.Lines.Append('<tr>');
       for j := 0 to rg.Kids[i].Kids.Count - 1 do
         WriteSimpleCell(rg.Kids[i].Kids[j]);
@@ -476,9 +496,10 @@ procedure TForm1.BuildHTML;
 
   procedure WriteInvertedHTMLTable(const rg: TRectGrid);
   var
-    i, j: Integer;
+    i, j: integer;
   begin
-    for j := 0 to rg.Kids[0].Kids.Count - 1 do begin
+    for j := 0 to rg.Kids[0].Kids.Count - 1 do
+    begin
       Memo1.Lines.Append('<tr>');
       for i := 0 to rg.Kids.Count - 1 do
         WriteSimpleCell(rg.Kids[i].Kids[j]);
@@ -486,14 +507,15 @@ procedure TForm1.BuildHTML;
     end;
   end;
 
-  function IsHTMLTable(const rg: TRectGrid): Boolean;
+  function IsHTMLTable(const rg: TRectGrid): boolean;
   var
-    i, j: Integer;
-    oldcount: Integer;
-    oldwidth: Integer;
+    i, j: integer;
+    oldcount: integer;
+    oldwidth: integer;
   begin
     Result := False;
-    if (rg.SliceType = stHorizontal) then begin
+    if (rg.SliceType = stHorizontal) then
+    begin
       for i := 0 to rg.Kids.Count - 1 do
         if rg.Kids[i].SliceType <> stVertical then
           Exit;
@@ -503,25 +525,29 @@ procedure TForm1.BuildHTML;
           Exit;
       for i := 0 to rg.Kids.Count - 1 do
         for j := 0 to rg.Kids[i].Kids.Count - 1 do
-          if rg.Kids[i].Kids[j].Sliced then Exit;          
-      for j := 0 to oldcount - 1 do begin
+          if rg.Kids[i].Kids[j].Sliced then
+            Exit;
+      for j := 0 to oldcount - 1 do
+      begin
         oldwidth := rg.Kids[0].Kids[j].Rect.Right - rg.Kids[0].Kids[j].Rect.Left;
         for i := 1 to rg.Kids.Count - 1 do
-          if oldwidth <> (rg.Kids[i].Kids[j].Rect.Right - rg.Kids[i].Kids[j].Rect.Left) then
+          if oldwidth <> (rg.Kids[i].Kids[j].Rect.Right -
+            rg.Kids[i].Kids[j].Rect.Left) then
             Exit;
       end;
     end;
     Result := True;
   end;
 
-  function IsInvertedHTMLTable(const rg: TRectGrid): Boolean;
+  function IsInvertedHTMLTable(const rg: TRectGrid): boolean;
   var
-    i, j: Integer;
-    oldcount: Integer;
-    oldheight: Integer;
+    i, j: integer;
+    oldcount: integer;
+    oldheight: integer;
   begin
     Result := False;
-    if (rg.SliceType = stVertical) then begin
+    if (rg.SliceType = stVertical) then
+    begin
       for i := 0 to rg.Kids.Count - 1 do
         if rg.Kids[i].SliceType <> stHorizontal then
           Exit;
@@ -531,11 +557,14 @@ procedure TForm1.BuildHTML;
           Exit;
       for i := 0 to rg.Kids.Count - 1 do
         for j := 0 to rg.Kids[i].Kids.Count - 1 do
-          if rg.Kids[i].Kids[j].Sliced then Exit;
-      for j := 0 to oldcount - 1 do begin
+          if rg.Kids[i].Kids[j].Sliced then
+            Exit;
+      for j := 0 to oldcount - 1 do
+      begin
         oldheight := rg.Kids[0].Kids[j].Rect.Bottom - rg.Kids[0].Kids[j].Rect.Top;
         for i := 1 to rg.Kids.Count - 1 do
-          if oldheight <> (rg.Kids[i].Kids[j].Rect.Bottom - rg.Kids[i].Kids[j].Rect.Top) then
+          if oldheight <> (rg.Kids[i].Kids[j].Rect.Bottom -
+            rg.Kids[i].Kids[j].Rect.Top) then
             Exit;
       end;
     end;
@@ -543,56 +572,62 @@ procedure TForm1.BuildHTML;
   end;
 
   procedure BuildHTMLOneLevel(const rg: TRectGrid);
-  var i: Integer;
+  var
+    i: integer;
   begin
     if rg.SliceType = stNone then
       Memo1.Text := Memo1.Text + '<img src="' + rg.Name + '.png">'
-    else begin
+    else
+    begin
       Memo1.Lines.Append('<table');
       AddText(' width="?"', rg.Attributes['width']);
       Memo1.Text := Memo1.Text + ' border="0" cellpadding="0" cellspacing="0">';
-      if rg.SliceType = stHorizontal then begin
+      if rg.SliceType = stHorizontal then
+      begin
         if (IsHTMLTable(rg)) then
           WriteHTMLTable(rg)
         else
-            for i := 0 to rg.Kids.Count - 1 do begin
-              if (rg.Kids[i].Sliced) then
-                begin
-                  Memo1.Lines.Append('<tr>');
-                  OpenTD(rg.Kids[i]);
-                  BuildHTMLOneLevel(rg.Kids[i]);
-                  Memo1.Text := Memo1.Text + '</td>';
-                  Memo1.Lines.Append('</tr>');
-                end
-              else
-                begin
-                  Memo1.Lines.Append('<tr>');
-                  WriteSimpleCell(rg.Kids[i]);
-                  Memo1.Lines.Append('</tr>');
-                end
+          for i := 0 to rg.Kids.Count - 1 do
+          begin
+            if (rg.Kids[i].Sliced) then
+            begin
+              Memo1.Lines.Append('<tr>');
+              OpenTD(rg.Kids[i]);
+              BuildHTMLOneLevel(rg.Kids[i]);
+              Memo1.Text := Memo1.Text + '</td>';
+              Memo1.Lines.Append('</tr>');
+            end
+            else
+            begin
+              Memo1.Lines.Append('<tr>');
+              WriteSimpleCell(rg.Kids[i]);
+              Memo1.Lines.Append('</tr>');
             end;
+          end;
 
       end
-      else begin { stVertical }
+      else
+      begin { stVertical }
         if (IsInvertedHTMLTable(rg)) then
           WriteInvertedHTMLTable(rg)
         else
+        begin
+          Memo1.Lines.Append('<tr>');
+          for i := 0 to rg.Kids.Count - 1 do
           begin
-            Memo1.Lines.Append('<tr>');
-            for i := 0 to rg.Kids.Count - 1 do begin
-              if (rg.Kids[i].Sliced) then
-                begin
-                  OpenTD(rg.Kids[i]);
-                  BuildHTMLOneLevel(rg.Kids[i]);
-                  Memo1.Text := Memo1.Text + '</td>';
-                end
-              else
-                begin
-                  WriteSimpleCell(rg.Kids[i]);
-                end
+            if (rg.Kids[i].Sliced) then
+            begin
+              OpenTD(rg.Kids[i]);
+              BuildHTMLOneLevel(rg.Kids[i]);
+              Memo1.Text := Memo1.Text + '</td>';
+            end
+            else
+            begin
+              WriteSimpleCell(rg.Kids[i]);
             end;
-            Memo1.Lines.Append('</tr>');
           end;
+          Memo1.Lines.Append('</tr>');
+        end;
       end;
       Memo1.Lines.Append('</table>');
     end;
@@ -608,23 +643,25 @@ begin
   Memo1.Lines.Append('</head>');
   Memo1.Lines.Append('<body>');
   if not document.Empty then
-    BuildHTMLOneLevel( document.Grid );
+    BuildHTMLOneLevel(document.Grid);
   Memo1.Lines.Append('</body></html>');
 end;
 
 procedure TForm1.mnuFileNewClick(Sender: TObject);
 //var
-  //tmp: TImageKnifeDocument;
+//tmp: TImageKnifeDocument;
 begin
   //tmp := TImageKnifeDocument.Create;
   rgSelection.Clear;
   try
     OpenPictureDialog1.Title := 'Select normal image';
-    if OpenPictureDialog1.Execute then begin
+    if OpenPictureDialog1.Execute then
+    begin
       document.NormalImageFilename := OpenPictureDialog1.Filename;
 
       OpenPictureDialog1.Title := 'Select rollover image';
-      if OpenPictureDialog1.Execute then begin
+      if OpenPictureDialog1.Execute then
+      begin
         document.OverImageFilename := OpenPictureDialog1.Filename;
       end;
 
@@ -649,7 +686,8 @@ end;
 
 procedure TForm1.mnuFileSaveAsClick(Sender: TObject);
 begin
-  if saveKnife.Execute then begin
+  if saveKnife.Execute then
+  begin
     document.SaveToFile(saveKnife.Filename);
     document.Filename := saveKnife.Filename;
   end;
@@ -657,13 +695,14 @@ end;
 
 procedure TForm1.mnuFileOpenClick(Sender: TObject);
 //var
-  //tmp: TImageKnifeDocument;
+//tmp: TImageKnifeDocument;
 begin
   //tmp := TImageKnifeDocument.Create;
   rgSelection.Clear;
   try
 
-    if openKnife.Execute then begin
+    if openKnife.Execute then
+    begin
 
       document.LoadFromFile(openKnife.Filename);
       document.Filename := openKnife.Filename;
@@ -692,45 +731,46 @@ var
   k: TObjectList;
   rg: TRectGrid;
 
-  i: Integer;
-
+  i: integer;
 
 begin
-  if document.Empty then Exit;
-  with SaveDialog1 do if Execute then begin
-    strPath := ExtractFilePath(Filename);
-    k := TObjectList.Create(false);
-    k.Add(document.Grid);
+  if document.Empty then
+    Exit;
+  with SaveDialog1 do
+    if Execute then
+    begin
+      strPath := ExtractFilePath(Filename);
+      k := TObjectList.Create(False);
+      k.Add(document.Grid);
 
-    while k.Count > 0 do begin
-      rg := k[0] as TRectGrid;
-      k.Delete(0);
-      if rg.Sliced then
+      while k.Count > 0 do
+      begin
+        rg := k[0] as TRectGrid;
+        k.Delete(0);
+        if rg.Sliced then
         begin
-          for i := 0 to rg.Kids.Count-1 do
+          for i := 0 to rg.Kids.Count - 1 do
             k.Add(rg.Kids[i]);
         end
-      else
+        else
         begin
           if not rg.IsSingleColor then
             SaveRect(strPath + rg.Name + '.png', rg.Rect);
         end;
+      end;
+
+      k.Free;
+
+      Memo1.Lines.SaveToFile(FileName);
+
     end;
-
-    k.Free;
-
-    Memo1.Lines.SaveToFile(FileName);
-
-
-
-  end;
-
 
 end;
 
 procedure TForm1.ResizePaintBox;
 begin
-  PaintBox1.SetBounds(PaintBox1.Left, PaintBox1.Top, Round(zoomLevel * document.Width), Round(zoomLevel * document.Height));
+  PaintBox1.SetBounds(PaintBox1.Left, PaintBox1.Top, Round(zoomLevel * document.Width),
+    Round(zoomLevel * document.Height));
 end;
 
 procedure TForm1.DocumentChanged;
@@ -762,11 +802,14 @@ procedure TForm1.chkSingleColorClick(Sender: TObject);
 var
   rg: TRectGrid;
 begin
-  if rgSelection.Count = 1 then begin
+  if rgSelection.Count = 1 then
+  begin
     rg := rgSelection[0] as TRectGrid;
     rg.IsSingleColor := chkSingleColor.Checked;
-    if rg.IsSingleColor then begin
-      rg.SingleColor := document.NormalImage.Bitmap.Canvas.Pixels[ rg.Rect.Left, rg.Rect.Top ];
+    if rg.IsSingleColor then
+    begin
+      rg.SingleColor := document.NormalImage.Bitmap.Canvas.Pixels[
+        rg.Rect.Left, rg.Rect.Top];
       lblSingleColor.Color := rg.SingleColor;
     end;
   end;
@@ -776,49 +819,51 @@ procedure TForm1.btnScan1Click(Sender: TObject);
 var
   k: TObjectList;
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 
-  x, y: Integer;
+  x, y: integer;
 
   lastColor: TColor;
 
   rt: TRect;
 
-  found: Boolean;
+  found: boolean;
 begin
-  if document.Empty then Exit;
-  k := TObjectList.Create(false);
+  if document.Empty then
+    Exit;
+  k := TObjectList.Create(False);
   k.Add(document.Grid);
 
-  while k.Count > 0 do begin
+  while k.Count > 0 do
+  begin
     rg := k[0] as TRectGrid;
     k.Delete(0);
     if rg.Sliced then
-      begin
-        for i := 0 to rg.Kids.Count-1 do
-          k.Add(rg.Kids[i]);
-      end
+    begin
+      for i := 0 to rg.Kids.Count - 1 do
+        k.Add(rg.Kids[i]);
+    end
     else
-      begin
-        rt := rg.Rect;
-        found := False;
-        lastColor := document.NormalImage.Bitmap.Canvas.Pixels[rt.Left, rt.Top];
-        for y := rt.Top to rt.Bottom -1 do
-          for x := rt.Left to rt.Right - 1 do
-            if lastColor <> document.NormalImage.Bitmap.Canvas.Pixels[x, y] then begin
-              found := True;
-              Break;
-            end;
-        if not found then
+    begin
+      rt := rg.Rect;
+      found := False;
+      lastColor := document.NormalImage.Bitmap.Canvas.Pixels[rt.Left, rt.Top];
+      for y := rt.Top to rt.Bottom - 1 do
+        for x := rt.Left to rt.Right - 1 do
+          if lastColor <> document.NormalImage.Bitmap.Canvas.Pixels[x, y] then
           begin
-            rg.IsSingleColor := True;
-            rg.SingleColor := lastColor;
+            found := True;
+            Break;
           end;
+      if not found then
+      begin
+        rg.IsSingleColor := True;
+        rg.SingleColor := lastColor;
       end;
+    end;
   end;
 
   k.Free;
-
 
 end;
 
@@ -844,23 +889,27 @@ end;
 
 procedure TForm1.btnGroupClick(Sender: TObject);
 var
-  iMin, iMax: Integer;
-  i, iCur: Integer;
+  iMin, iMax: integer;
+  i, iCur: integer;
   rg, oldParent: TRectGrid;
 begin
-  if rgSelection.Count <= 1 then Exit;
+  if rgSelection.Count <= 1 then
+    Exit;
   rg := rgSelection[0] as TRectGrid;
   oldParent := rg.Parent;
   iMin := oldParent.Kids.IndexOf(rg);
   iMax := iMin;
 
-  for i := 1 to rgSelection.Count - 1 do begin
+  for i := 1 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
     if rg.Parent <> oldParent then
       raise Exception.Create('All selected rects must belong to the same parent');
     iCur := oldParent.Kids.IndexOf(rg);
-    if iCur < iMin then iMin := iCur;
-    if iCur > iMax then iMax := iCur;
+    if iCur < iMin then
+      iMin := iCur;
+    if iCur > iMax then
+      iMax := iCur;
   end;
 
   if (iMax - iMin + 1 > rgSelection.Count) then
@@ -872,89 +921,95 @@ begin
 end;
 
 procedure TForm1.PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 
 var
   k: TObjectList;
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 
 begin
-  if document.Empty then Exit;
+  if document.Empty then
+    Exit;
 
   DrawMarker(OldMarker);
 
-  k := TObjectList.Create(false);
+  k := TObjectList.Create(False);
 
-  if (chkAcross.Checked) and (MarkerMode in [mmHorizontal,mmVertical]) then
-    begin
-      if MarkerMode = mmHorizontal then
-        document.Grid.RectsFromY(OldMarker.Y, k)
-      else if MarkerMode = mmVertical then
-        document.Grid.RectsFromX(OldMarker.X, k)
-    end
+  if (chkAcross.Checked) and (MarkerMode in [mmHorizontal, mmVertical]) then
+  begin
+    if MarkerMode = mmHorizontal then
+      document.Grid.RectsFromY(OldMarker.Y, k)
+    else if MarkerMode = mmVertical then
+      document.Grid.RectsFromX(OldMarker.X, k);
+  end
   else
-    k.Add( document.Grid.RectFromPos(Point(OldMarker.X,OldMarker.Y)) );
+    k.Add(document.Grid.RectFromPos(Point(OldMarker.X, OldMarker.Y)));
 
   if MarkerMode = mmSelect then
+  begin
+    if ssCtrl in Shift then
     begin
-      if ssCtrl in Shift then
-        begin
-          for i := 0 to k.Count - 1 do begin
-            rg := k[i] as TRectGrid;
-            if (rgSelection.IndexOf(rg) < 0) then
-              rgSelection.Add(rg)
-            else
-              rgSelection.Remove(rg)
-          end;
-        end
-      else
-        begin
-          rgSelection.Clear;
-          for i := 0 to k.Count - 1 do begin
-            rg := k[i] as TRectGrid;
-            rgSelection.Add(rg)
-          end;
-        end
-    end
-  else if MarkerMode = mmSelectParents then
-    begin
-      if ssCtrl in Shift then
-        begin
-          for i := 0 to k.Count - 1 do begin
-            rg := (k[i] as TRectGrid).Parent;
-            if (rgSelection.IndexOf(rg) < 0) then
-              rgSelection.Add(rg)
-            else
-              rgSelection.Remove(rg)
-          end;
-        end
-      else
-        begin
-          rgSelection.Clear;
-          for i := 0 to k.Count - 1 do begin
-            rg := (k[i] as TRectGrid).Parent;
-            rgSelection.Add(rg)
-          end;
-        end
-    end
-  else
-    begin
-      for i := 0 to k.Count - 1 do begin
+      for i := 0 to k.Count - 1 do
+      begin
         rg := k[i] as TRectGrid;
-        case MarkerMode of
-          mmHorizontal: rg.SliceHorizontal(OldMarker.Y);
-          mmVertical: rg.SliceVertical(OldMarker.X);
-        end;
+        if (rgSelection.IndexOf(rg) < 0) then
+          rgSelection.Add(rg)
+        else
+          rgSelection.Remove(rg);
+      end;
+    end
+    else
+    begin
+      rgSelection.Clear;
+      for i := 0 to k.Count - 1 do
+      begin
+        rg := k[i] as TRectGrid;
+        rgSelection.Add(rg);
       end;
     end;
+  end
+  else if MarkerMode = mmSelectParents then
+  begin
+    if ssCtrl in Shift then
+    begin
+      for i := 0 to k.Count - 1 do
+      begin
+        rg := (k[i] as TRectGrid).Parent;
+        if (rgSelection.IndexOf(rg) < 0) then
+          rgSelection.Add(rg)
+        else
+          rgSelection.Remove(rg);
+      end;
+    end
+    else
+    begin
+      rgSelection.Clear;
+      for i := 0 to k.Count - 1 do
+      begin
+        rg := (k[i] as TRectGrid).Parent;
+        rgSelection.Add(rg);
+      end;
+    end;
+  end
+  else
+  begin
+    for i := 0 to k.Count - 1 do
+    begin
+      rg := k[i] as TRectGrid;
+      case MarkerMode of
+        mmHorizontal: rg.SliceHorizontal(OldMarker.Y);
+        mmVertical: rg.SliceVertical(OldMarker.X);
+      end;
+    end;
+  end;
 
   PaintBox1.Refresh;
   DrawMarker(OldMarker);
 
   k.Free;
 
-  if MarkerMode in [mmHorizontal,mmVertical] then
+  if MarkerMode in [mmHorizontal, mmVertical] then
     BuildTree
   else if MarkerMode in [mmSelect, mmSelectParents] then
     SelectionChanged;
@@ -973,25 +1028,27 @@ begin
   StringGrid1.Cells[0, 4] := 'background-position';
 end;
 
-function TForm1.GetGridProperty(const Index: string): String;
+function TForm1.GetGridProperty(const Index: string): string;
 var
-  i: Integer;
+  i: integer;
 begin
   Result := '';
   for i := 0 to StringGrid1.RowCount - 1 do
-    if StringGrid1.Cells[0, i] = Index then begin
+    if StringGrid1.Cells[0, i] = Index then
+    begin
       Result := StringGrid1.Cells[1, i];
       Break;
     end;
 end;
 
-procedure TForm1.SetGridProperty(const Index: string; const Value: String);
+procedure TForm1.SetGridProperty(const Index: string; const Value: string);
 var
-  i: Integer;
+  i: integer;
 begin
 
   for i := 0 to StringGrid1.RowCount - 1 do
-    if StringGrid1.Cells[0, i] = Index then begin
+    if StringGrid1.Cells[0, i] = Index then
+    begin
       StringGrid1.Cells[1, i] := Value;
       Break;
     end;
@@ -1000,16 +1057,20 @@ end;
 procedure TForm1.SelectionChanged;
 var
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 begin
-  if rgSelection.Count = 1 then begin
+  if rgSelection.Count = 1 then
+  begin
     rg := rgSelection[0] as TRectGrid;
     chkSingleColor.Checked := rg.IsSingleColor;
-    if rg.IsSingleColor then begin
+    if rg.IsSingleColor then
+    begin
       lblSingleColor.Color := rg.SingleColor;
       //lblSingleColor.Visible := True;
       //btnPickSingleColor.Visible := True;
-    end else begin
+    end
+    else
+    begin
       //lblSingleColor.Enabled := False;
       //btnPickSingleColor.Enabled := False;
     end;
@@ -1017,16 +1078,17 @@ begin
     cmbVAlign.ItemIndex := cmbVAlign.Items.IndexOf(rg.Attributes['valign']);
 
     for i := 0 to StringGrid1.RowCount - 1 do
-      StringGrid1.Cells[1, i] := rg.Attributes[ StringGrid1.Cells[0, i] ];
+      StringGrid1.Cells[1, i] := rg.Attributes[StringGrid1.Cells[0, i]];
   end;
 end;
 
 procedure TForm1.chkBackgroundClick(Sender: TObject);
 var
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 begin
-  for i := 0 to rgSelection.Count - 1 do begin
+  for i := 0 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
     rg.IsBackground := chkBackground.Checked;
   end;
@@ -1036,9 +1098,10 @@ end;
 procedure TForm1.cmbVAlignChange(Sender: TObject);
 var
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 begin
-  for i := 0 to rgSelection.Count - 1 do begin
+  for i := 0 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
     rg.Attributes['valign'] := cmbVAlign.Text;
   end;
@@ -1048,9 +1111,10 @@ end;
 procedure TForm1.btnRefreshWidthClick(Sender: TObject);
 var
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
 begin
-  for i := 0 to rgSelection.Count - 1 do begin
+  for i := 0 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
     rg.Attributes['width'] := IntToStr(rg.Rect.Right - rg.Rect.Left);
     GridProperty['width'] := rg.Attributes['width']; { stupid code }
@@ -1058,17 +1122,18 @@ begin
 
 end;
 
-procedure TForm1.StringGrid1SetEditText(Sender: TObject; ACol,
-  ARow: Integer; const Value: String);
+procedure TForm1.StringGrid1SetEditText(Sender: TObject; ACol, ARow: integer;
+  const Value: string);
 var
   rg: TRectGrid;
-  i: Integer;
+  i: integer;
   strName: string;
 begin
   strName := StringGrid1.Cells[0, ARow];
-  for i := 0 to rgSelection.Count - 1 do begin
+  for i := 0 to rgSelection.Count - 1 do
+  begin
     rg := rgSelection[i] as TRectGrid;
-    rg.Attributes[strName] := Value
+    rg.Attributes[strName] := Value;
   end;
 
 end;

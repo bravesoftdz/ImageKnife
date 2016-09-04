@@ -12,11 +12,9 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
-  TextHeight = 13
   object Splitter1: TSplitter
     Left = 185
     Top = 65
@@ -32,16 +30,16 @@ object Form1: TForm1
     Align = alLeft
     TabOrder = 2
     object Splitter2: TSplitter
-      Left = 1
-      Top = 249
+      Left = 0
+      Top = 247
       Width = 183
       Height = 3
       Cursor = crVSplit
       Align = alTop
     end
     object TreeView1: TTreeView
-      Left = 1
-      Top = 1
+      Left = 0
+      Top = 0
       Width = 183
       Height = 248
       Align = alTop
@@ -52,14 +50,10 @@ object Form1: TForm1
       TabOrder = 0
       OnChange = TreeView1Change
       OnEdited = TreeView1Edited
-      Items.Data = {
-        010000001F0000000000000000000000FFFFFFFFFFFFFFFF0000000001000000
-        06727479727479200000000000000000000000FFFFFFFFFFFFFFFF0000000000
-        0000000772747972747972}
     end
     object Memo1: TMemo
-      Left = 32
-      Top = 312
+      Left = 30
+      Top = 310
       Width = 129
       Height = 73
       Lines.Strings = (
@@ -68,22 +62,22 @@ object Form1: TForm1
       Visible = False
     end
     object Panel3: TPanel
-      Left = 1
-      Top = 252
+      Left = 0
+      Top = 250
       Width = 183
       Height = 261
       Align = alClient
       TabOrder = 2
       object Label1: TLabel
-        Left = 24
-        Top = 32
+        Left = 22
+        Top = 30
         Width = 25
         Height = 13
         Caption = 'Color'
       end
       object lblSingleColor: TLabel
-        Left = 56
-        Top = 32
+        Left = 54
+        Top = 30
         Width = 31
         Height = 17
         AutoSize = False
@@ -91,8 +85,8 @@ object Form1: TForm1
         ParentColor = False
       end
       object btnPickSingleColor: TSpeedButton
-        Left = 88
-        Top = 32
+        Left = 86
+        Top = 30
         Width = 23
         Height = 22
         Hint = 'Pick from image'
@@ -115,15 +109,15 @@ object Form1: TForm1
         ShowHint = True
       end
       object Label3: TLabel
-        Left = 8
-        Top = 88
+        Left = 6
+        Top = 86
         Width = 29
         Height = 13
         Caption = 'VAlign'
       end
       object chkSingleColor: TCheckBox
-        Left = 8
-        Top = 8
+        Left = 6
+        Top = 6
         Width = 97
         Height = 17
         Caption = 'Single Color'
@@ -131,8 +125,8 @@ object Form1: TForm1
         OnClick = chkSingleColorClick
       end
       object chkBackground: TCheckBox
-        Left = 8
-        Top = 64
+        Left = 6
+        Top = 62
         Width = 137
         Height = 17
         Caption = 'Render as background'
@@ -140,8 +134,8 @@ object Form1: TForm1
         OnClick = chkBackgroundClick
       end
       object cmbVAlign: TComboBox
-        Left = 40
-        Top = 88
+        Left = 38
+        Top = 86
         Width = 121
         Height = 21
         Style = csDropDownList
@@ -155,8 +149,8 @@ object Form1: TForm1
           'middle')
       end
       object btnRefreshWidth: TBitBtn
-        Left = 142
-        Top = 8
+        Left = 140
+        Top = 6
         Width = 33
         Height = 25
         ModalResult = 1
@@ -179,7 +173,7 @@ object Form1: TForm1
       end
       object StringGrid1: TStringGrid
         Left = 0
-        Top = 120
+        Top = 118
         Width = 185
         Height = 120
         ColCount = 2
@@ -210,8 +204,8 @@ object Form1: TForm1
     ShowHint = True
     TabOrder = 0
     object btnExport: TSpeedButton
-      Left = 88
-      Top = 8
+      Left = 86
+      Top = 6
       Width = 23
       Height = 22
       Hint = 'Export'
@@ -232,8 +226,8 @@ object Form1: TForm1
       OnClick = mnuFileExportClick
     end
     object SpeedButton3: TSpeedButton
-      Left = 8
-      Top = 8
+      Left = 6
+      Top = 6
       Width = 23
       Height = 22
       Hint = 'New'
@@ -254,8 +248,8 @@ object Form1: TForm1
       OnClick = mnuFileNewClick
     end
     object SpeedButton4: TSpeedButton
-      Left = 32
-      Top = 8
+      Left = 30
+      Top = 6
       Width = 23
       Height = 22
       Hint = 'Open'
@@ -276,8 +270,8 @@ object Form1: TForm1
       OnClick = mnuFileOpenClick
     end
     object SpeedButton5: TSpeedButton
-      Left = 56
-      Top = 8
+      Left = 54
+      Top = 6
       Width = 23
       Height = 22
       Hint = 'Save'
@@ -298,8 +292,8 @@ object Form1: TForm1
       OnClick = mnuFileSaveClick
     end
     object btnAutoName: TButton
-      Left = 272
-      Top = 8
+      Left = 270
+      Top = 6
       Width = 75
       Height = 25
       Caption = 'Auto Name'
@@ -307,8 +301,8 @@ object Form1: TForm1
       OnClick = btnAutoNameClick
     end
     object tbCompression: TTrackBar
-      Left = 352
-      Top = 8
+      Left = 350
+      Top = 6
       Width = 81
       Height = 25
       Hint = 'png compression level'
@@ -325,8 +319,8 @@ object Form1: TForm1
       TickStyle = tsAuto
     end
     object btnScan1: TButton
-      Left = 120
-      Top = 8
+      Left = 118
+      Top = 6
       Width = 147
       Height = 25
       Caption = 'Scan For Single Color Areas'
@@ -361,8 +355,8 @@ object Form1: TForm1
     ShowHint = True
     TabOrder = 4
     object btnSelector: TSpeedButton
-      Left = 8
-      Top = 1
+      Left = 6
+      Top = 0
       Width = 49
       Height = 22
       Hint = 'Select'
@@ -373,8 +367,8 @@ object Form1: TForm1
       OnClick = btnSelectorClick
     end
     object SpeedButton1: TSpeedButton
-      Left = 160
-      Top = 1
+      Left = 158
+      Top = 0
       Width = 89
       Height = 22
       GroupIndex = 1
@@ -383,8 +377,8 @@ object Form1: TForm1
       OnClick = SpeedButton1Click
     end
     object SpeedButton2: TSpeedButton
-      Left = 256
-      Top = 1
+      Left = 254
+      Top = 0
       Width = 81
       Height = 22
       GroupIndex = 1
@@ -393,8 +387,8 @@ object Form1: TForm1
       OnClick = SpeedButton2Click
     end
     object btnSelectParents: TSpeedButton
-      Left = 64
-      Top = 1
+      Left = 62
+      Top = 0
       Width = 89
       Height = 22
       Hint = 'Select Parents'
@@ -404,7 +398,7 @@ object Form1: TForm1
       OnClick = btnSelectParentsClick
     end
     object btnGroup: TSpeedButton
-      Left = 448
+      Left = 446
       Top = 0
       Width = 97
       Height = 22
@@ -414,8 +408,8 @@ object Form1: TForm1
       OnClick = btnGroupClick
     end
     object chkAcross: TCheckBox
-      Left = 344
-      Top = 1
+      Left = 342
+      Top = 0
       Width = 81
       Height = 17
       Caption = 'Slice across'

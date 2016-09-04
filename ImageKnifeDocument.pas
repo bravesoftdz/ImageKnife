@@ -1,5 +1,7 @@
 unit ImageKnifeDocument;
 
+{$MODE Delphi}
+
 interface
 
 uses RectGrid, Classes, Graphics, SysUtils;
@@ -13,11 +15,11 @@ type
     FFilename: string;
     FNormalImage: TPicture;
     FOverImage: TPicture;
-    function IsEmpty: Boolean;
-    procedure SetNormalImageFilename(const str: String);
-    procedure SetOverImageFilename(const str: String);
-    function GetWidth: Integer;
-    function GetHeight: Integer;
+    function IsEmpty: boolean;
+    procedure SetNormalImageFilename(const str: string);
+    procedure SetOverImageFilename(const str: string);
+    function GetWidth: integer;
+    function GetHeight: integer;
   public
     constructor Create;
     destructor Destroy; override;
@@ -27,18 +29,20 @@ type
     procedure LoadFromFile(const Filename: string);
     procedure SaveToFile(const Filename: string);
 
-    property Empty: Boolean read IsEmpty;
-    property Width: Integer read GetWidth;
-    property Height: Integer read GetHeight;
+    property Empty: boolean read IsEmpty;
+    property Width: integer read GetWidth;
+    property Height: integer read GetHeight;
     property NormalImage: TPicture read FNormalImage;
     property OverImage: TPicture read FOverImage;
   published
-    property NormalImageFilename: string read FNormalImageFilename write SetNormalImageFilename;
-    property OverImageFilename: string read FOverImageFilename write SetOverImageFilename;
+    property NormalImageFilename: string read FNormalImageFilename
+      write SetNormalImageFilename;
+    property OverImageFilename: string read FOverImageFilename
+      write SetOverImageFilename;
 
     property Grid: TRectGrid read FRectGrid write FRectGrid;
 
-    property Filename: String read FFilename write FFilename;
+    property Filename: string read FFilename write FFilename;
 
 
 
@@ -50,8 +54,6 @@ type
 implementation
 
 uses FileUtils, xml;
-
-
 
 constructor TImageKnifeDocument.Create;
 begin
@@ -82,12 +84,12 @@ begin
   FFilename := '';
 end;
 
-function TImageKnifeDocument.IsEmpty: Boolean;
+function TImageKnifeDocument.IsEmpty: boolean;
 begin
   Result := FRectGrid = nil;
 end;
 
-function TImageKnifeDocument.GetWidth: Integer;
+function TImageKnifeDocument.GetWidth: integer;
 begin
   if IsEmpty then
     Result := 0
@@ -95,7 +97,7 @@ begin
     Result := FRectGrid.Rect.Right;
 end;
 
-function TImageKnifeDocument.GetHeight: Integer;
+function TImageKnifeDocument.GetHeight: integer;
 begin
   if IsEmpty then
     Result := 0
@@ -103,7 +105,7 @@ begin
     Result := FRectGrid.Rect.Bottom;
 end;
 
-procedure TImageKnifeDocument.SetNormalImageFilename(const str: String);
+procedure TImageKnifeDocument.SetNormalImageFilename(const str: string);
 var
   p: TPicture;
 begin
@@ -112,25 +114,25 @@ begin
     p.LoadFromFile(str);
 
     if (IsEmpty) then
-      begin
-        FNormalImage.Assign(p);
-        FNormalImageFileName := str;
-        FRectGrid := TRectGrid.Create(Rect(0,0,p.Width,p.Height));
-      end
+    begin
+      FNormalImage.Assign(p);
+      FNormalImageFileName := str;
+      FRectGrid := TRectGrid.Create(Rect(0, 0, p.Width, p.Height));
+    end
     else
-      begin
-        if (p.Width <> Self.Width) or (p.Height <> Self.Height) then
-          raise Exception.Create('New normal image is not the same size as the current');
-        FNormalImage.Assign(p);
-        FNormalImageFileName := str;
-      end;
+    begin
+      if (p.Width <> Self.Width) or (p.Height <> Self.Height) then
+        raise Exception.Create('New normal image is not the same size as the current');
+      FNormalImage.Assign(p);
+      FNormalImageFileName := str;
+    end;
 
   finally
     p.Free;
   end;
 end;
 
-procedure TImageKnifeDocument.SetOverImageFilename(const str: String);
+procedure TImageKnifeDocument.SetOverImageFilename(const str: string);
 var
   p: TPicture;
 begin
@@ -139,18 +141,18 @@ begin
     p.LoadFromFile(str);
 
     if (IsEmpty) then
-      begin
-        FOverImage.Assign(p);
-        FOverImageFileName := str;
-        FRectGrid := TRectGrid.Create(Rect(0,0,p.Width,p.Height));
-      end
+    begin
+      FOverImage.Assign(p);
+      FOverImageFileName := str;
+      FRectGrid := TRectGrid.Create(Rect(0, 0, p.Width, p.Height));
+    end
     else
-      begin
-        if (p.Width <> Self.Width) or (p.Height <> Self.Height) then
-          raise Exception.Create('New normal image is not the same size as the current');
-        FOverImage.Assign(p);
-        FOverImageFileName := str;
-      end;
+    begin
+      if (p.Width <> Self.Width) or (p.Height <> Self.Height) then
+        raise Exception.Create('New normal image is not the same size as the current');
+      FOverImage.Assign(p);
+      FOverImageFileName := str;
+    end;
 
   finally
     p.Free;
@@ -172,7 +174,8 @@ begin
   r.Free;
   f.Free;
 
-  if root.Name <> 'root' then raise Exception.Create('root tag expected');
+  if root.Name <> 'root' then
+    raise Exception.Create('root tag expected');
 
   FNormalImageFilename := root.Attributes['NormalImageFilename'];
   FOverImageFilename := root.Attributes['OverImageFilename'];
@@ -181,8 +184,9 @@ begin
   if enum.Count <> 1 then
     raise Exception.Create('Only one master cell is allowed');
 
-  if FRectGrid <> nil then FRectGrid.Free;
-  FRectGrid := TRectGrid.Create(Rect(0,0,0,0));
+  if FRectGrid <> nil then
+    FRectGrid.Free;
+  FRectGrid := TRectGrid.Create(Rect(0, 0, 0, 0));
   FRectGrid.LoadFromXML(enum[0]);
 
   enum.Free;
@@ -193,11 +197,14 @@ begin
 
   NormalImage.LoadFromFile(NormalImageFilename);
 
-  if OverImageFilename <> '' then begin
+  if OverImageFilename <> '' then
+  begin
     OverImage.LoadFromFile(OverImageFilename);
-    if (NormalImage.Width <> OverImage.Width) or (NormalImage.Height <> OverImage.Height) then
+    if (NormalImage.Width <> OverImage.Width) or
+      (NormalImage.Height <> OverImage.Height) then
       raise Exception.Create('Image dimensions must be the same');
-    if (Grid.Rect.Right <> NormalImage.Width) or (Grid.Rect.Bottom <> NormalImage.Height) then
+    if (Grid.Rect.Right <> NormalImage.Width) or (Grid.Rect.Bottom <>
+      NormalImage.Height) then
       raise Exception.Create('Grid dimensions dont match images');
     if (Grid.Rect.Left <> 0) or (Grid.Rect.Top <> 0) then
       raise Exception.Create('Master rect must begin at top left');
@@ -211,7 +218,8 @@ var
   w: TXMLWriter;
   root: TXMLNode;
 begin
-  if Empty then Exit;
+  if Empty then
+    Exit;
   f := TFileStream.Create(Filename, fmCreate);
   w := TXMLWriter.Create(f);
 

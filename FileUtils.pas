@@ -1,23 +1,25 @@
 unit FileUtils;
 
+{$MODE Delphi}
+
 interface
 
-uses Windows;
+uses LCLIntf, LCLType, LMessages, Types;
 
-function ReadString(var f: File): String;
-procedure WriteString(var f: File; const s: string);
+function ReadString(var f: file): string;
+procedure WriteString(var f: file; const s: string);
 
-function ReadInt(var f: File): Integer;
-procedure WriteInt(var f: File; const i: Integer);
+function ReadInt(var f: file): integer;
+procedure WriteInt(var f: file; const i: integer);
 
-function ReadRect(var f: File): TRect;
-procedure WriteRect(var f: File; const Rect: TRect);
+function ReadRect(var f: file): TRect;
+procedure WriteRect(var f: file; const Rect: TRect);
 
 implementation
 
-function ReadString(var f: File): String;
+function ReadString(var f: file): string;
 var
-  len: Integer;
+  len: integer;
 begin
   BlockRead(f, len, SizeOf(len));
   SetLength(Result, len);
@@ -25,9 +27,9 @@ begin
     BlockRead(f, Result[1], len);
 end;
 
-procedure WriteString(var f: File; const s: string);
+procedure WriteString(var f: file; const s: string);
 var
-  len: Integer;
+  len: integer;
 begin
   len := Length(s);
   BlockWrite(f, len, sizeof(len));
@@ -35,22 +37,22 @@ begin
     BlockWrite(f, s[1], len);
 end;
 
-function ReadInt(var f: File): Integer;
+function ReadInt(var f: file): integer;
 begin
   BlockRead(f, Result, SizeOf(Result));
 end;
 
-procedure WriteInt(var f: File; const i: Integer);
+procedure WriteInt(var f: file; const i: integer);
 begin
   BlockWrite(f, i, sizeof(i));
 end;
 
-function ReadRect(var f: File): TRect;
+function ReadRect(var f: file): TRect;
 begin
   BlockRead(f, Result, SizeOf(Result));
 end;
 
-procedure WriteRect(var f: File; const Rect: TRect);
+procedure WriteRect(var f: file; const Rect: TRect);
 begin
   BlockWrite(f, Rect, sizeOf(Rect));
 end;

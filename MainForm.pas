@@ -12,6 +12,9 @@ uses
   ImageKnifeDocument, RectGrid, Grids;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     StatusBar1: TStatusBar;
     Panel1: TPanel;
@@ -70,6 +73,7 @@ type
     btnRefreshWidth: TBitBtn;
     StringGrid1: TStringGrid;
     procedure FormCreate(Sender: TObject);
+    procedure mnuFileExitClick(Sender: TObject);
     procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: integer);
     procedure SpeedButton1Click(Sender: TObject);
@@ -238,6 +242,11 @@ begin
 
   BuildTree;
   InitializePropertyGrid;
+end;
+
+procedure TForm1.mnuFileExitClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TForm1.SaveRect(const Filename: string; const rt: TRect);
